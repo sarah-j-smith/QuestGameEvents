@@ -16,6 +16,7 @@ Check the section under [using libraries](http://docs.textadventures.co.uk/quest
 ## To Create events
 
 Create events that you want to happen without special prompting in "active_events" by
+
 * right-click, new object > change drop-down under "Type" from "None" to "Game Event"
 * set the number of turns after the game starts that you want the event to occur
 * add a script to implement the behaviour of the event
@@ -26,6 +27,7 @@ As soon as the game reaches the `turn` value, the event will run.
 ## Have Events Run After a Previous Event
 
 Create events that you want to happen contingent on previous events under "dead_events"
+
     * right-click, new object > change drop-down under "Type" from "None" to "Game Event"
     * set the number of turns after being triggered that it should start
     * add a script
