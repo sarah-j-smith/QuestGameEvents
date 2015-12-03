@@ -32,23 +32,25 @@ There are 3 functions you can use:
 
 The event will occur, after some_event.turn turns have passed. (It's moved to active_events)
 
+----
 
     UnscheduleGameEvent(another_event)
 
 The event will not occur. (It's moved to dead_events).
 
+----
 
     StageEvent(super_event)
 
 If done is true, does nothing. If done is false the event immediately occurs. Its script is run and its done flag is set true.
 
+----
+
 Note that after an event occurs the done flag is set. Under the hood, StageEvent is used to make events occur. You can test this flag to see if an event has been completed or not.
 
-CODE: SELECT ALL
-if (not balloon_inflating.done) {
-  msg ("I shall use my inflate-o-matic!")
-}
-
+    if (not balloon_inflating.done) {
+        msg ("I shall use my inflate-o-matic!")
+    }
 
 If you call ScheduleEvent on an event it will not alter the done flag. If done is true, the event will be moved to active_events but it will never occur. If you want an event to occur, but somehow done is set, then manually set it to false before calling ScheduleEvent. UnscheduleGameEvent likewise does not alter the done flag.
 
