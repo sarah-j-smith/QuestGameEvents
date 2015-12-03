@@ -28,13 +28,13 @@ As soon as the game reaches the `turn` value, the event will run.
 
 Create events that you want to happen contingent on previous events under "dead_events"
 
-    * right-click, new object > change drop-down under "Type" from "None" to "Game Event"
-    * set the number of turns after being triggered that it should start
-    * add a script
-    * check "auto destroy" if needed
-    * trigger it by:
-         * find an event in 2) above and the name of this event to its _Next event:_ list OR
-         * write a script that uses one of the functions below
+* right-click, new object > change drop-down under "Type" from "None" to "Game Event"
+* set the number of turns after being triggered that it should start
+* add a script
+* check "auto destroy" if needed
+* trigger it by:
+    * find an event in 2) above and the name of this event to its _Next event:_ list OR
+    * write a script that uses one of the functions below
 
 When your event is scheduled as a "next event", the "turns" setting is the number of turns after being scheduled that it runs. Of course if you want it to run immediately after its pre-cursor event triggers it you can just make its "turns" equal to 1 or 0.
 
