@@ -6,25 +6,47 @@ There's a great page in the documentation about [turn based events](http://docs.
 
 Here's a library with tabs to support that.
 
-To use it
+## To Use It
+
+Check the section under [using libraries](http://docs.textadventures.co.uk/quest/tutorial/using_libraries.html) in the Quest documentation to add the library to your Quest game.  Basically just choose _Add_ > _Library_ from the menu, then click the _Browse_ button to navigate to the `GameEvents.aslx` file.  Once loaded you still need to do some setup in your game:
 
 1.  Create two rooms "dead_events" and "active_events" with no exits into or out of them
 2.  Add an integer attribute called "turn" to your main game object, set it to 0
-3.  Create events that you want to happen without special prompting in "active_events" by
-    * right-click, new object > change drop-down under "Type" from "None" to "Game Event"
-    * set the number of turns after the game starts that you want the event to occur
-    * add a script to implement the behaviour of the event
-    * check "auto destroy" if you only want the event script to run once
-4.  Create events that you want to happen contingent on previous events under "dead_events"
+
+## To Create events
+
+Create events that you want to happen without special prompting in "active_events" by
+* right-click, new object > change drop-down under "Type" from "None" to "Game Event"
+* set the number of turns after the game starts that you want the event to occur
+* add a script to implement the behaviour of the event
+* check "auto destroy" if you only want the event script to run once
+
+As soon as the game reaches the `turn` value, the event will run.
+
+## Have Events Run After a Previous Event
+
+Create events that you want to happen contingent on previous events under "dead_events"
     * right-click, new object > change drop-down under "Type" from "None" to "Game Event"
     * set the number of turns after being triggered that it should start
     * add a script
     * check "auto destroy" if needed
     * trigger it by:
-         * find an event in 2) above and set the "Next event:" drop-down to point to this one OR
+         * find an event in 2) above and the name of this event to its _Next event:_ list OR
          * write a script that uses one of the functions below
 
 When your event is scheduled as a "next event", the "turns" setting is the number of turns after being scheduled that it runs. Of course if you want it to run immediately after its pre-cursor event triggers it you can just make its "turns" equal to 1 or 0.
+
+## Run Events Only When Player is in a Room
+
+Often you want an event to behave differently depending on what room the player is in.  Events are effectively global, but you may want to print different messages if the player is in different places.  
+
+* To do this create an event and place it in the given room.
+* Name your event with the same name as the parent event but with a distinguishing suffix, eg the room name.
+* Otherwise configure it as for normal events
+
+When the events run, first your main event will run, and then any room events.  So for example if you have an event `balloon_rises`, you could have a `balloon_rises_garden` in the room called `garden`.  First `balloon_rises` would be run, then `balloon_rises_garden` if the player is in the garden.
+
+## Use Events from Scripts
 
 There are 3 functions you can use:
 
