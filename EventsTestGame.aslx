@@ -1,0 +1,283 @@
+<!--Saved by Quest 5.6.5783.24153-->
+<asl version="550">
+  <include ref="English.aslx" />
+  <include ref="Core.aslx" />
+  <include ref="GameEvents.aslx" />
+  <game name="EventsTestGame">
+    <gameid>ec918a6a-5bb3-438d-99e0-06357c919472</gameid>
+    <version>1.0</version>
+    <firstpublished>2015</firstpublished>
+    <statusattributes type="stringdictionary">
+      <item>
+        <key>turn</key>
+        <value></value>
+      </item>
+    </statusattributes>
+    <turn type="int">0</turn>
+    <autodescription_youarein_newline />
+    <attr name="autodescription_youcansee_newline" type="boolean">false</attr>
+    <autodescription_description_newline />
+    <autodescription_youcango_newline />
+  </game>
+  <object name="room">
+    <inherit name="editor_room" />
+    <alias>Lounge Room</alias>
+    <description><![CDATA[This is a modish living room, with a conversation pit, and a naugahyde couch.  A picture window faces out onto the garden.<br/>]]></description>
+    <object name="player">
+      <inherit name="editor_object" />
+      <inherit name="editor_player" />
+    </object>
+    <exit alias="south" to="garden">
+      <inherit name="southdirection" />
+    </exit>
+    <object name="certificate">
+      <inherit name="editor_object" />
+      <look><![CDATA[In pride of place on the lounge room wall is your competition certificate.<br/><br/><i>Runner-up Prize in Spiffyville Kumquat Fanciers Gala Event</i><br/><br/>]]></look>
+    </object>
+    <object name="alarm">
+      <inherit name="editor_object" />
+      <look>It's the alarm for you garden.  Wouldn't want anything to happen to your prize kumquats.  {if alarm.flashing=True:A red light on the front of it is flashing!}</look>
+      <flashing type="boolean">false</flashing>
+    </object>
+    <object name="balloon_inflating_room">
+      <inherit name="editor_object" />
+      <inherit name="event_type" />
+      <visible type="boolean">false</visible>
+      <action type="script"><![CDATA[
+        msg ("The sound seems to be coming from the garden.<br/>")
+      ]]></action>
+    </object>
+    <object name="gnome_escapes_room">
+      <inherit name="editor_object" />
+      <inherit name="event_type" />
+      <action type="script"><![CDATA[
+        msg ("<i>Whoop!  Whoop!</i><br/>")
+        msg ("That's the garden alarm!  The red light on it is flashing!")
+      ]]></action>
+    </object>
+    <object name="balloon_floats_away_room">
+      <inherit name="editor_object" />
+      <inherit name="event_type" />
+      <alias>balloon_floats_away</alias>
+      <action type="script">
+        msg ("You turn from looking out the window into the garden, and sigh deeply.")
+      </action>
+    </object>
+  </object>
+  <object name="active_events">
+    <inherit name="editor_room" />
+    <description><![CDATA[THIS ROOM MUST EXIST - ADD A ROOM WITH THE NAME<br/><br/>active_events<br/><br/>TO YOUR GAME<br/><br/>place all the events you wish to start at the beginning of the game inside this room]]></description>
+    <object name="balloon_inflating">
+      <inherit name="editor_object" />
+      <inherit name="event_type" />
+      <turn type="int">7</turn>
+      <next type="stringlist">
+        <value>gnome_escapes</value>
+      </next>
+      <action type="script"><![CDATA[
+        msg ("An audible hiss can be heard.  Just what you'd expect for a balloon inflating.<br/>")
+        balloon.visible = true
+        if (game.pov.parent = garden) {
+          msg ("From between the broccoli and kumquats in the garden you do in fact see a balloon inflating.<br/>")
+        }
+        else {
+          msg ("The sound seems to be coming from the garden.<br/>")
+        }
+      ]]></action>
+    </object>
+  </object>
+  <object name="dead_events">
+    <inherit name="editor_room" />
+    <description><![CDATA[THIS ROOM MUST EXIST - ADD A ROOM WITH THE NAME<br/><br/>dead_events<br/><br/>TO YOUR GAME<br/><br/>place all the events you wish to be started by other events, or by script commands, inside this room]]></description>
+    <object name="balloon_floats_away">
+      <inherit name="editor_object" />
+      <inherit name="event_type" />
+      <turn type="int">2</turn>
+      <next type="stringlist">
+        <value>game_ends_loss</value>
+      </next>
+      <action type="script">
+        msg ("Having finished inflating the bright red balloon rises gracefully from the vegetable patch.  You can just make out some gnomish cackling as it silently floats up over the fence.")
+        RemoveObject (balloon)
+      </action>
+    </object>
+    <object name="game_ends_loss">
+      <inherit name="editor_object" />
+      <inherit name="event_type" />
+      <turn type="int">2</turn>
+      <action type="script"><![CDATA[
+        msg ("The balloon bound bandit has gone and with him your prize kumquats.<br/>")
+        msg ("GAME OVER - BAD LUCK!")
+        finish
+      ]]></action>
+    </object>
+    <object name="inflateomatic">
+      <inherit name="editor_object" />
+      <inherit name="event_type" />
+      <turn type="int">2</turn>
+      <next type="stringlist">
+        <value>gnome_escapes</value>
+      </next>
+      <action type="script"><![CDATA[
+        balloon.visible = true
+        msg ("The gnome pops a canister from his belt and applies it to the balloon.  Suddenly with a rush the balloon is completely inflated!<br/>")
+      ]]></action>
+    </object>
+    <object name="gnome_revealed">
+      <inherit name="editor_object" />
+      <inherit name="event_type" />
+      <turn type="int">1</turn>
+      <action type="script"><![CDATA[
+        gnome.look = "Not an ordinary gnome at all, at all!<br/>"
+        if (gnome.parent = garden) {
+          msg ("A magic <b>gnome</b> leaps from the vegetable patch.<br/>")
+        }
+        msg ("<i>You've caught me - raiding the kumquats!<br/>")
+        if (not balloon_inflating.done) {
+          msg ("I shall have to make my escape by using my balloon and my instant inflate-o-matic!</i><br/>")
+          ScheduleGameEvent (inflateomatic)
+          UnscheduleGameEvent (balloon_inflating)
+        }
+        if (gnome.parent <> balloon) {
+          msg ("The gnome leaps into the basket attached to the balloon.<br/>")
+        }
+      ]]></action>
+    </object>
+    <object name="gnome_escapes">
+      <inherit name="editor_object" />
+      <inherit name="event_type" />
+      <turn type="int">2</turn>
+      <next type="stringlist">
+        <value>balloon_floats_away</value>
+      </next>
+      <action type="script">
+        MoveObject (gnome, balloon)
+        kumquats.listalias = "kumquats (depleted)"
+        kumquats.health = "depleted"
+      </action>
+    </object>
+  </object>
+  <object name="garden">
+    <inherit name="editor_room" />
+    <description><![CDATA[It is a normal garden.  A typical fixture in domestic bliss.<br/><br/>{once:Not required for events to happen, but quite useful if you're looking for a place to stage one.<br/>}]]></description>
+    <alias>Garden</alias>
+    <enter type="script">
+    </enter>
+    <object name="balloon">
+      <inherit name="editor_object" />
+      <inherit name="container_open" />
+      <visible type="boolean">false</visible>
+      <alias>hot air balloon</alias>
+      <feature_container />
+      <transparent />
+      <look>Just like the one from 'Round the World in 80 Days' but somewhat smaller.  The basket attached is really only big enough for a wee gnome.</look>
+      <listchildren />
+    </object>
+    <object name="broccoli">
+      <inherit name="editor_object" />
+      <inherit name="plural" />
+      <scenery type="boolean">false</scenery>
+      <look>Some lovely broccoli growing lusciously in a row.  Strangely gnomes don't like broccoli.</look>
+      <alias>broccoli</alias>
+      <listalias>broccoli (icky)</listalias>
+      <takemsg>Hmmm.  I know they're healthy for me, but some other time.</takemsg>
+    </object>
+    <object name="kumquats">
+      <inherit name="editor_object" />
+      <inherit name="plural" />
+      <listalias>kumquats (plenty)</listalias>
+      <health>healthy</health>
+      <takemsg>Oh, they're so luscious and fresh.  I could just look at them every day.  I really don't want to pick them just yet.  Soon.</takemsg>
+      <look type="script">
+        msg ("A " + kumquats.health + " crop of kumquats, laid out in a row right across the garden.")
+        firsttime {
+          msg ("Yes, never gets old looking at these plump juicy fellows.")
+        }
+        otherwise {
+          if (balloon.visible) {
+            msg ("Must do a better job of looking after these kumquats if I'm to win the next competition.")
+          }
+          else {
+            msg ("Wait-a-cotton-picking-minute!  What's this balloon doing here!")
+            MakeObjectVisible (balloon)
+          }
+        }
+      </look>
+    </object>
+    <exit alias="north" to="room">
+      <inherit name="northdirection" />
+    </exit>
+    <object name="gnome">
+      <inherit name="editor_object" />
+      <look type="script"><![CDATA[
+        msg ("An ordinary garden gnome.  Or is it...<br/>")
+        StageEvent (gnome_revealed)
+      ]]></look>
+    </object>
+    <object name="gnome_escapes_garden">
+      <inherit name="editor_object" />
+      <inherit name="event_type" />
+      <visible type="boolean">false</visible>
+      <action type="script">
+        msg ("The gnome is making his escape with armfuls of your kumquats!")
+      </action>
+    </object>
+    <object name="balloon_inflating_garden">
+      <inherit name="editor_object" />
+      <inherit name="event_type" />
+      <visible type="boolean">false</visible>
+      <action type="script"><![CDATA[
+        msg ("From between the broccoli and kumquats in the garden you do in fact see a balloon inflating.<br/>")
+      ]]></action>
+    </object>
+  </object>
+  <walkthrough name="watch balloon from house">
+    <steps type="simplestringlist">
+      look at certificate
+      look at alarm
+      look
+      wait
+      wait
+      wait
+      wait
+      wait
+      wait
+      wait
+      wait
+      wait
+      wait
+    </steps>
+  </walkthrough>
+  <walkthrough name="investigate balloon">
+    <steps type="simplestringlist">
+      look at certificate
+      go south
+      look at broccoli
+      look at kumquats
+      look at kumquats
+      look at hot air balloon
+      look at gnome
+      look at hot air balloon
+      look at gnome
+      wait
+      wait
+      wait
+      wait
+      wait
+    </steps>
+  </walkthrough>
+  <walkthrough name="investigate gnome">
+    <steps type="simplestringlist">
+      look at certificate
+      go south
+      look at gnome
+      look at gnome
+      look at hot air balloon
+      l
+      look at kumquats
+      look at hot air balloon
+      wait
+      wait
+    </steps>
+  </walkthrough>
+</asl>

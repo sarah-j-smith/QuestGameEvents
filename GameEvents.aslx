@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<library>
+
+  <type name="event_type">
+    <turn type="int">-1</turn>
+    <done type="boolean">false</done>
+    <auto />
+    <next type="stringlist"></next>
+    <scenery type="boolean">true</scenery>
+    <visible type="boolean">false</visible>
+  </type>
+
+  <turnscript name="eventhandler">
+    <enabled />
+    <script><![CDATA[
+      game.turn = game.turn + 1
+      foreach (evt, GetDirectChildren(active_events)) {
+        if (evt.turn <= game.turn) {
+          RunEvent(evt)
+        }
+      }
+      ]]></script>
+  </turnscript>
+
+  <function name="RunEvent" parameters="event"><![CDATA[
+    room_events = GetRoomEvents(event)
+    StageEvent(event)
+    foreach (room_event, room_events) {
+      StageEvent(room_event)
+    }
+    ]]>
+  </function>
+
+  <function name="StageEvent" parameters="event"><![CDATA[
+    if (not event.done) {
+      do (event, "action")
+      event.done = true
+      if (event.auto) {
+         UnscheduleGameEvent(event)
+         if (HasAttribute(event, "next")) {
+           foreach (evt, event.next) {
+             nx = GetObject(evt)
+             if (nx = null) {
+               error( "ERROR: Could not find next event '" + evt + "' for '" + event.name)
+             }
+             ScheduleGameEvent(nx)
+           }
+        }
+      }
+    }
+    ]]>
+  </function>
+
+  <function name="UnscheduleGameEvent" parameters="event"><![CDATA[
+    event.parent = dead_events
+    ]]>
+  </function>
+
+  <function name="ScheduleGameEvent" parameters="event"><![CDATA[
+    event.parent = active_events
+    event.turn = event.turn + game.turn
+    ]]>
+  </function>
+
+  <function name="GetRoomEvents" type="objectlist" parameters="event"><![CDATA[
+    // now grab events for the room
+    lst = NewObjectList()
+    foreach (obj, GetDirectChildren(game.pov.parent)) {
+      if (DoesInherit (obj, "event_type") and not GetBoolean (obj, "done") and StartsWith(obj.name, event.name)) {
+        list add (lst, obj)
+      }
+    }
+    return (lst)
+    ]]>
+  </function>
+
+
+    <tab>
+      <parent>_ObjectEditor</parent>
+      <caption>Game Event</caption>
+      <mustnotinherit>editor_room; defaultplayer</mustnotinherit>
+      <control>
+        <controltype>dropdowntypes</controltype>
+        <caption>Type</caption>
+        <types>*=None; event_type=Game Event</types>
+        <width>100</width>
+      </control>
+
+      <control>
+        <controltype>number</controltype>
+        <caption>Begins on turn</caption>
+        <attribute>turn</attribute>
+        <width>100</width>
+        <mustinherit>event_type</mustinherit>
+        <minimum>0</minimum>
+        <maximum>1000</maximum>
+      </control>
+
+      <control>
+        <controltype>checkbox</controltype>
+        <caption>Auto-destroy on occurrence</caption>
+        <attribute>auto</attribute>
+        <mustinherit>event_type</mustinherit>
+      </control>
+
+      <control>
+        <controltype>list</controltype>
+        <caption>Next event</caption>
+        <attribute>next</attribute>
+        <mustinherit>event_type</mustinherit>
+      </control>
+
+      <control>
+        <caption>Run this script</caption>
+        <controltype>script</controltype>
+        <attribute>action</attribute>
+        <mustinherit>event_type</mustinherit>
+      </control>
+
+    </tab>
+</library>
