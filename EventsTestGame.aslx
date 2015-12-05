@@ -63,6 +63,9 @@
         msg ("You turn from looking out the window into the garden, and sigh deeply.")
       </action>
     </object>
+    <exit alias="east" to="bathroom">
+      <inherit name="eastdirection" />
+    </exit>
   </object>
   <object name="active_events">
     <inherit name="editor_room" />
@@ -228,6 +231,48 @@
       <visible type="boolean">false</visible>
       <action type="script"><![CDATA[
         msg ("From between the broccoli and kumquats in the garden you do in fact see a balloon inflating.<br/>")
+      ]]></action>
+    </object>
+  </object>
+  <object name="bathroom">
+    <inherit name="editor_room" />
+    <description>A sterile white tiled bathroom.</description>
+    <exit alias="west" to="room">
+      <inherit name="westdirection" />
+    </exit>
+    <object name="basin">
+      <inherit name="editor_object" />
+      <look>A standard porcelain basin, with hot and cold faucets.</look>
+      <object name="hot faucet">
+        <inherit name="editor_object" />
+        <look>This is the faucet for hot water.  A red button on the top of it is a hint that this is what its for.</look>
+        <scenery />
+      </object>
+      <object name="cold faucet">
+        <inherit name="editor_object" />
+        <look>The cold faucet.  It has a blue marker on top of it.</look>
+      </object>
+    </object>
+    <object name="medicine cabinet">
+      <inherit name="editor_object" />
+      <object name="valium">
+        <inherit name="editor_object" />
+        <take />
+        <takemsg>One little pill.  That will be fine surely.  I will just need one.</takemsg>
+        <eat>After swallowing one of the Valium tablets you feel so much calmer.</eat>
+      </object>
+    </object>
+    <object name="shower">
+      <inherit name="editor_object" />
+    </object>
+    <object name="EVENT_nerves">
+      <inherit name="editor_object" />
+      <inherit name="event_type" />
+      <turn type="int">2</turn>
+      <action type="script"><![CDATA[
+        msg ("<i>Oh, my gosh.  The kumquat festival is soon!  What if something happens!</i>")
+        msg ("The anxiety grips you and you feel yourself reaching for the medicine cabinet.")
+        AddToInventory (valium)
       ]]></action>
     </object>
   </object>

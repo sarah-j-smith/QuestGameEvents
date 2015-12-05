@@ -19,12 +19,15 @@
           RunEvent(evt)
         }
       }
+      foreach (revt, GetCurrentRoomEvents()) {
+        StageEvent(revt)
+      }
       ]]></script>
   </turnscript>
 
   <function name="RunEvent" parameters="event"><![CDATA[
-    room_events = GetRoomEvents(event)
     StageEvent(event)
+    room_events = GetChildEventsForCurrentRoom(event)
     foreach (room_event, room_events) {
       StageEvent(room_event)
     }
@@ -34,8 +37,8 @@
   <function name="StageEvent" parameters="event"><![CDATA[
     if (not event.done) {
       do (event, "action")
-      event.done = true
       if (event.auto) {
+         event.done = true
          UnscheduleGameEvent(event)
          if (HasAttribute(event, "next")) {
            foreach (evt, event.next) {
@@ -62,11 +65,23 @@
     ]]>
   </function>
 
-  <function name="GetRoomEvents" type="objectlist" parameters="event"><![CDATA[
+  <function name="GetChildEventsForCurrentRoom" type="objectlist" parameters="parent_event"><![CDATA[
     // now grab events for the room
     lst = NewObjectList()
     foreach (obj, GetDirectChildren(game.pov.parent)) {
-      if (DoesInherit (obj, "event_type") and not GetBoolean (obj, "done") and StartsWith(obj.name, event.name)) {
+      if (DoesInherit (obj, "event_type") and not GetBoolean (obj, "done") and StartsWith(obj.name, parent_event.name)) {
+        list add (lst, obj)
+      }
+    }
+    return (lst)
+    ]]>
+  </function>
+
+  <function name="GetCurrentRoomEvents" type="objectlist"><![CDATA[
+    // now grab events for the room
+    lst = NewObjectList()
+    foreach (obj, GetDirectChildren(game.pov.parent)) {
+      if (DoesInherit (obj, "event_type") and not GetBoolean (obj, "done") and StartsWith(obj.name, "EVENT_")) {
         list add (lst, obj)
       }
     }

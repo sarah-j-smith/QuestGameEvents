@@ -6,6 +6,8 @@ There's a great page in the documentation about [turn based events](http://docs.
 
 Here's a library with tabs to support that.
 
+![Screenshot](screenshot.png "Screenshot")
+
 ## To Use It
 
 Check the section under [using libraries](http://docs.textadventures.co.uk/quest/tutorial/using_libraries.html) in the Quest documentation to add the library to your Quest game.  Basically just choose _Add_ > _Library_ from the menu, then click the _Browse_ button to navigate to the `GameEvents.aslx` file.  Once loaded you still need to do some setup in your game:
@@ -24,6 +26,17 @@ Create events that you want to happen without special prompting in "active_event
 
 As soon as the game reaches the `turn` value, the event will run.
 
+## The 'auto' and 'done' flags
+
+When the `auto` flag is set, by checking the box marked "Auto-destroy on occurrence" in
+the UI tab for example, after an event is run, it will automatically be unscheduled,
+AND its `done` flag will be set to true.  If `auto` is false, then the event will just
+keep occurring every turn.  If `auto` is false then you probably want to use some
+script to disable the event, for example have another event `UnscheduleGameEvent`.
+
+The `done` flag effectively disables an event when set.  The `StageEvent` function which is
+responsible for making an event occur, will do nothing if `done` is set on an event.
+
 ## Have Events Run After a Previous Event
 
 Create events that you want to happen contingent on previous events under "dead_events"
@@ -38,15 +51,29 @@ Create events that you want to happen contingent on previous events under "dead_
 
 When your event is scheduled as a "next event", the "turns" setting is the number of turns after being scheduled that it runs. Of course if you want it to run immediately after its pre-cursor event triggers it you can just make its "turns" equal to 1 or 0.
 
-## Run Events Only When Player is in a Room
+## Child Events: Run Parts of Events Only When Player is in a Room
 
-Often you want an event to behave differently depending on what room the player is in.  Events are effectively global, but you may want to print different messages if the player is in different places.  
+Often you want an event to *behave differently* depending on what room the player is in.  Events are effectively global, but you may want to print different messages if the player is in different places.  
 
-* To do this create an event and place it in the given room.
-* Name your event with the same name as the parent event but with a distinguishing suffix, eg the room name.
+* To do this create an event and place it in the given room.  This will be a child of your main event.
+* Name your child event with the same name as the parent event but with a distinguishing suffix, eg the room name.
 * Otherwise configure it as for normal events
 
-When the events run, first your main event will run, and then any room events.  So for example if you have an event `balloon_rises`, you could have a `balloon_rises_garden` in the room called `garden`.  First `balloon_rises` would be run, then `balloon_rises_garden` if the player is in the garden.
+When the events run, first your main event will run, and then any room events.  So for example if you have an event `balloon_rises`, you could have a `balloon_rises_garden` in the room called `garden`.  First `balloon_rises` would be run, then `balloon_rises_garden` if the player is in the garden.  
+
+## Room Events: Run Events Only for a Specific Room
+
+Often you want an event to only occur if the player is in a specific room.
+
+Place an event with the name "EVENT_something" in a room to have it executed *only when* the player
+is in that room.  If you want to have an event that behaves differently for a specific room but
+which happens no matter what room the player is in, use a *child event* instead.
+
+If the `turn`attribute on the event is -1 then it will execute straight away.  Otherwise it will occur
+just like other events when the player is in that room, AND the `game.turn` counter is
+greater than or equal to the event turn.  Note that `auto` and `done` behave the same as usual.
+
+Child events do not run for a Room Event.
 
 ## Use Events from Scripts
 
@@ -54,19 +81,19 @@ There are 3 functions you can use:
 
     ScheduleGameEvent(some_event)
 
-The event will occur, after some_event.turn turns have passed. (It's moved to active_events)
+The event will occur, assuming `done` is false, after some_event.turn turns have passed. (It's moved to active_events)
 
 ----
 
     UnscheduleGameEvent(another_event)
 
-The event will not occur. (It's moved to dead_events).
+The event will not occur. (It's moved to dead_events).  The `done` flag is not changed.
 
 ----
 
     StageEvent(super_event)
 
-If done is true, does nothing. If done is false the event immediately occurs. Its script is run and its done flag is set true.
+If `done` is true, does nothing. If `done` is false the event immediately occurs. Its script is run and its done flag is set true.
 
 ----
 
