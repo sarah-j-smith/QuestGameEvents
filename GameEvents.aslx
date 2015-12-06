@@ -36,7 +36,12 @@
 
   <function name="StageEvent" parameters="event"><![CDATA[
     if (not event.done) {
-      do (event, "action")
+      if (HasScript(event, "action")) {
+        do (event, "action")
+      }
+      else if (HasString(event, "action")) {
+        msg (event.action)
+      }
       if (event.auto) {
          event.done = true
          UnscheduleGameEvent(event)
@@ -126,9 +131,15 @@
       </control>
 
       <control>
-        <caption>Run this script</caption>
-        <controltype>script</controltype>
+        <caption>Action for this event</caption>
+        <controltype>multi</controltype>
         <attribute>action</attribute>
+        <types>
+           null=No action; string=Print text; script=Run script
+        </types>
+        <editors>
+          string=richtext
+        </editors>
         <mustinherit>event_type</mustinherit>
       </control>
 

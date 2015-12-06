@@ -221,17 +221,13 @@
       <inherit name="editor_object" />
       <inherit name="event_type" />
       <visible type="boolean">false</visible>
-      <action type="script">
-        msg ("The gnome is making his escape with armfuls of your kumquats!")
-      </action>
+      <action>The gnome is escaping with a load of your precious kumquats!  He has the very largest, and best prize-winning ones under his arms!</action>
     </object>
     <object name="balloon_inflating_garden">
       <inherit name="editor_object" />
       <inherit name="event_type" />
       <visible type="boolean">false</visible>
-      <action type="script"><![CDATA[
-        msg ("From between the broccoli and kumquats in the garden you do in fact see a balloon inflating.<br/>")
-      ]]></action>
+      <action>From between the broccoli and kumquats in the garden you do in fact see a balloon inflating.</action>
     </object>
   </object>
   <object name="bathroom">

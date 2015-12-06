@@ -21,7 +21,7 @@ Create events that you want to happen without special prompting in "active_event
 
 * right-click, new object > change drop-down under "Type" from "None" to "Game Event"
 * set the number of turns after the game starts that you want the event to occur
-* add a script to implement the behaviour of the event
+* add a script to implement the behaviour of the event or text to print
 * check "auto destroy" if you only want the event script to run once
 
 As soon as the game reaches the `turn` value, the event will run.
